@@ -1,0 +1,155 @@
+<%@ jet 
+	imports="
+		org.talend.core.model.process.INode 
+		org.talend.core.model.process.ElementParameterParser 
+		org.talend.core.model.metadata.IMetadataTable 
+		org.talend.core.model.metadata.IMetadataColumn 
+		org.talend.core.model.process.IConnection
+		org.talend.core.model.process.IConnectionCategory
+		org.talend.designer.codegen.config.CodeGeneratorArgument
+		org.talend.core.model.metadata.types.JavaTypesManager
+		org.talend.core.model.metadata.types.JavaType
+		java.util.List 
+    	java.util.Map		
+	" 
+%>
+<% 
+    CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+    INode node = (INode) codeGenArgument.getArgument();
+    String cid = node.getUniqueName();
+    String channelId = ElementParameterParser.getValue(node, "__CHANNEL_ID__");
+    String applicationName = ElementParameterParser.getValue(node, "__APPLICATION_NAME__");
+	String startDate = ElementParameterParser.getValue(node, "__START_DATE__");
+	String endDate = ElementParameterParser.getValue(node, "__END_DATE__");
+	String dimensions = ElementParameterParser.getValue(node, "__DIMENSIONS__");
+	String metrics = ElementParameterParser.getValue(node, "__METRICS__");
+	String filters = ElementParameterParser.getValue(node, "__FILTERS__");
+	String sorts = ElementParameterParser.getValue(node, "__SORTS__");
+	String timeout = ElementParameterParser.getValue(node, "__TIMEOUT_IN_SEC__");
+	String timeOffset = ElementParameterParser.getValue(node, "__TIME_OFFSET__");
+	String maxRows = ElementParameterParser.getValue(node, "__MAX_ROWS__");
+	String numberFormatLocale = ElementParameterParser.getValue(node, "__NUMBERFORMAT_LOCALE__");
+	if (numberFormatLocale != null && numberFormatLocale.isEmpty() == false) {
+		numberFormatLocale = "\"" + numberFormatLocale + "\"";
+	} else {
+		numberFormatLocale = "null";
+	}
+	String keepClient = ElementParameterParser.getValue(node, "__KEEP_CLIENT__");
+	String keepClientName = ElementParameterParser.getValue(node, "__KEEP_CLIENT_KEY__");
+	keepClientName = keepClientName != null && keepClientName.isEmpty() == false ? keepClientName : "\"\"";
+    List<IMetadataColumn> listColumns = null;
+    IConnection conn = null;
+    if (node.getOutgoingConnections().size() > 0) {
+        conn = node.getOutgoingConnections().get(0);
+        IMetadataTable metadata = conn.getMetadataTable();
+        listColumns = metadata.getListColumns();
+    }
+    boolean dieOnError = "true".equals(ElementParameterParser.getValue(node, "__DIE_ON_ERROR__"));
+    String clientSecretFile = ElementParameterParser.getValue(node, "__CLIENT_SECRET_FILE__");
+    String debug = ElementParameterParser.getValue(node, "__DEBUG__");
+    String accountEmail = ElementParameterParser.getValue(node, "__ACCOUNT_EMAIL__");
+%>
+    // start creating client
+<% if ("true".equals(keepClient)) {%>
+	de.jlo.talendcomp.youtubeanalytics.YoutubeAnalyticsInput <%=cid%> = de.jlo.talendcomp.youtubeanalytics.YoutubeAnalyticsInput.getFromCache(<%=clientSecretFile%> + <%=keepClientName%> + "<%=cid%>" + jobName);
+	if (<%=cid%> == null) {
+		<%=cid%> = new de.jlo.talendcomp.youtubeanalytics.YoutubeAnalyticsInput();
+		<%=cid%>.setDebug(<%=debug%>);
+<% } else {%>
+		de.jlo.talendcomp.youtubeanalytics.YoutubeAnalyticsInput <%=cid%> = new de.jlo.talendcomp.youtubeanalytics.YoutubeAnalyticsInput();
+<% }%>
+<% if (applicationName != null && applicationName.trim().isEmpty() == false) {%>
+		<%=cid%>.setApplicationName(<%=applicationName%>);
+<% }%>
+      <%=cid%>.setAccountEmail(<%=accountEmail%>);
+		<%=cid%>.setClientSecretFile(<%=clientSecretFile%>);
+<% if (timeout != null && timeout.trim().isEmpty() == false) {%>
+		<%=cid%>.setTimeoutInSeconds(<%=timeout%>);
+<% }%>
+<% if (timeOffset != null && timeOffset.trim().isEmpty() == false) {%>
+		<%=cid%>.setTimeOffsetMillisToPast(<%=timeOffset%>);
+<% }%>
+<% if (maxRows != null && maxRows.trim().isEmpty() == false) {%>
+		<%=cid%>.setMaxRows(<%=maxRows%>);
+<% }%>
+		try {
+			// initialize client with private key
+			<%=cid%>.initializeAnalyticsClient();
+		} catch (Exception e) {
+			globalMap.put("<%=cid%>_ERROR_MESSAGE", e.getMessage());
+<% if (dieOnError) { %>
+			throw e;
+<% } else { %>
+			e.printStackTrace();
+<% } %>	
+		}
+		globalMap.put("<%=cid%>", <%=cid%>);
+<% if ("true".equals(keepClient)) {%>
+		de.jlo.talendcomp.youtubeanalytics.YoutubeAnalyticsInput.putIntoCache(<%=clientSecretFile%> + <%=keepClientName%> + "<%=cid%>" + jobName, <%=cid%>);
+	} // if (<%=cid%> == null)
+<% }%>
+	// setup query
+	<%=cid%>.setChannelId(<%=channelId%>);
+	<%=cid%>.setStartDate(<%=startDate%>);
+	// for selecting data for one day, set end date == start date
+	<%=cid%>.setEndDate(<%=endDate%>);
+<% if (dimensions != null && dimensions.trim().isEmpty() == false) {%>
+	<%=cid%>.setDimensions(<%=dimensions%>);
+<% }%>
+	<%=cid%>.setMetrics(<%=metrics%>);
+<% if (filters != null && filters.trim().isEmpty() == false) {%>
+	<%=cid%>.setFilters(<%=filters%>);
+<% }%>
+<% if (sorts != null && sorts.trim().isEmpty() == false) {%>
+	<%=cid%>.setSorts(<%=sorts%>);
+<% }%>
+	// fire query and fetch first chunk of data
+	try {
+		// checks also the correctness of result columns
+		<%=cid%>.executeQuery();
+	} catch (Exception e) {
+		globalMap.put("<%=cid%>_ERROR_MESSAGE", e.getMessage());
+<% if (dieOnError) { %>
+		throw e;
+<% } else { %>
+		e.printStackTrace();
+<% } %>	
+	}
+	// iterate through the data...
+	int countLines_<%=cid%> = 0;
+	while (true) {
+		try {
+			// hasNextDataset() executes a new query if needed
+			if (<%=cid%>.hasNextDataset() == false) {
+		    	break;
+		    }
+		} catch (Exception e) {
+			globalMap.put("<%=cid%>_ERROR_MESSAGE", e.getMessage());
+<% if (dieOnError) { %>
+			throw e;
+<% } else { %>
+			break;
+<% } %>	
+		} // try catch
+		// next row from results
+		java.util.List<Object> dataset_<%=cid%> = <%=cid%>.getNextDataset();
+		// create a new row, thats avoid the need of setting attributes to null
+		<%=conn.getName()%> = new <%=conn.getName()%>Struct();
+<%	int index = 0;
+    if (listColumns != null && conn != null) {
+        for (IMetadataColumn col : listColumns) {
+        String javaClassName = JavaTypesManager.getJavaTypeFromId(col.getTalendType()).getNullableClass().getName();
+        if (javaClassName.contains("String")) { %>
+		<%=conn.getName()%>.<%=col.getLabel()%> = (String) dataset_<%=cid%>.get(<%=index%>);
+<%      } else if (javaClassName.contains("Integer")) { %>
+		<%=conn.getName()%>.<%=col.getLabel()%> = ((BigDecimal) dataset_<%=cid%>.get(<%=index%>)).intValue();
+<%      } else if (javaClassName.contains("BigDecimal")) { %>
+		<%=conn.getName()%>.<%=col.getLabel()%> = (BigDecimal) dataset_<%=cid%>.get(<%=index%>); 
+<%      } else if (javaClassName.contains("Long")) { %>
+		<%=conn.getName()%>.<%=col.getLabel()%> = ((BigDecimal) dataset_<%=cid%>.get(<%=index%>)).longValue();
+<%      } else { %>
+		if (true) throw new Exception("Value convertion for column <%=col.getLabel()%> failed: Only String, Integer, Bigdecimal or Long allowed");        
+<%      } %>
+<%          index++; %>
+<%      } %>
+<%  } %>
