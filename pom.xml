@@ -1,15 +1,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>TalendComp</groupId>
-  <version>1.5</version>
+  <groupId>de.cimt.talendcomp</groupId>
+  <version>1.6</version>
   <name>YouTubeAnalyticsReport</name>
   <url>http://maven.apache.org</url>
 
   <properties>
     <project.youtube.analytics.version>v1-rev50-1.19.1</project.youtube.analytics.version>
     <project.youtube.version>v3-rev128-1.19.1</project.youtube.version>
-    <project.http.version>1.19.0</project.http.version>
-    <project.oauth.version>1.19.0</project.oauth.version>
+    <project.http.version>1.21.0</project.http.version>
+    <project.oauth.version>1.21.0</project.oauth.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
@@ -55,26 +55,20 @@
           <target>1.6</target>
         </configuration>
       </plugin>
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.3</version>
-        <configuration>
-          <descriptorRefs>
-            <descriptorRef>jar-with-dependencies</descriptorRef>
-          </descriptorRefs>
-        </configuration>
-        <executions>
-          <execution>
-            <id>make-assembly</id> <!-- this is used for inheritance merges -->
-            <phase>package</phase> <!-- bind to the packaging phase -->
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-shade-plugin</artifactId>
+			<executions>
+				<execution>
+					<phase>package</phase>
+					<goals>
+						<goal>shade</goal>
+					</goals>
+				</execution>
+			</executions>
+		</plugin>
     </plugins>
   </build>
   
-  <artifactId>jlo.talendcomp.ytanalytics</artifactId>
+  <artifactId>cimt-talendcomp-ytanalytics</artifactId>
 </project>
