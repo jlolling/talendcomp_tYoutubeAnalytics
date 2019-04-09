@@ -148,7 +148,7 @@
 <%      } else if (javaClassName.contains("Long")) { %>
 		<%=conn.getName()%>.<%=col.getLabel()%> = ((BigDecimal) dataset_<%=cid%>.get(<%=index%>)).longValue();
 <%      } else { %>
-		if (true) throw new Exception("Value convertion for column <%=col.getLabel()%> failed: Only String, Integer, Bigdecimal or Long allowed");        
+		if (true) throw new Exception("Value conversion for column <%=col.getLabel()%> failed: Only String, Integer, BigDecimal or Long allowed");        
 <%      } %>
 <%          index++; %>
 <%      } %>

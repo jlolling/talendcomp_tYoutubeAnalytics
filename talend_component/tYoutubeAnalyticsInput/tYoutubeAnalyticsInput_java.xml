@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <COMPONENT> 
-  <HEADER PLATEFORM="ALL" SERIAL="" VERSION="1.7" STATUS="PROD" COMPATIBILITY="ALL" AUTHOR="cimt AG" RELEASE_DATE="20170403" STARTABLE="true"> 
+  <HEADER PLATEFORM="ALL" SERIAL="" VERSION="2.0" STATUS="PROD" COMPATIBILITY="ALL" AUTHOR="cimt AG" RELEASE_DATE="20190409" STARTABLE="true"> 
     <SIGNATURE/> 
   </HEADER>  
   <FAMILIES> 
@@ -37,6 +37,9 @@
     <PARAMETER FIELD="TEXT" NAME="DIMENSIONS" NUM_ROW="60" GROUP="QUERY"> 
       <DEFAULT/> 
     </PARAMETER>  
+    <PARAMETER NAME="LABEL_DIMENSIONS" FIELD="LABEL" COLOR="0;0;0" NUM_ROW="61" GROUP="QUERY"> 
+      <DEFAULT>Take care some dimensions (e.g. video) expects sorting.</DEFAULT> 
+    </PARAMETER>  
     <PARAMETER FIELD="TEXT" NAME="METRICS" NUM_ROW="70" REQUIRED="true" GROUP="QUERY"> 
       <DEFAULT/> 
     </PARAMETER>  
@@ -50,7 +53,7 @@
       <DEFAULT/> 
     </PARAMETER>  
     <PARAMETER FIELD="TEXT" NAME="MAX_ROWS" NUM_ROW="95"> 
-      <DEFAULT/> 
+      <DEFAULT>100</DEFAULT> 
     </PARAMETER>  
     <PARAMETER FIELD="CHECK" NAME="DIE_ON_ERROR" NUM_ROW="100"> 
       <DEFAULT>true</DEFAULT> 
@@ -73,30 +76,36 @@
       <DEFAULT>true</DEFAULT> 
     </PARAMETER>  
     <PARAMETER FIELD="TEXT" NAME="KEEP_CLIENT_KEY" NUM_ROW="40" SHOW_IF="KEEP_CLIENT == 'true'"/>  
-    <PARAMETER NAME="RELEASE_LABEL_20170403" FIELD="LABEL" COLOR="0;0;0" NUM_ROW="900">
-      <DEFAULT>Release: 1.7 build at: 20170403</DEFAULT>
+    <PARAMETER NAME="RELEASE_LABEL_20190409" FIELD="LABEL" COLOR="0;0;0" NUM_ROW="900">
+      <DEFAULT>Release: 2.0 build at: 20190409</DEFAULT>
     </PARAMETER>
   </ADVANCED_PARAMETERS>  
   <CODEGENERATION> 
     <IMPORTS> 
-      <IMPORT NAME="jlo-talendcomp-google-youtubeanalytics" MODULE="jlo-talendcomp-google-youtubeanalytics-1.7.jar" REQUIRED="true"/>
-      <IMPORT NAME="google-api-services-youtubeAnalytics-v1-rev111" MODULE="google-api-services-youtubeAnalytics-v1-rev111-1.22.0.jar" REQUIRED="true"/>
-      <IMPORT NAME="google-api-client" MODULE="google-api-client-1.22.0.jar" REQUIRED="true"/>
-      <IMPORT NAME="google-oauth-client" MODULE="google-oauth-client-1.22.0.jar" REQUIRED="true"/>
-      <IMPORT NAME="guava-jdk5" MODULE="guava-jdk5-17.0.jar" REQUIRED="true"/>
-      <IMPORT NAME="google-api-services-youtube-v3-rev182" MODULE="google-api-services-youtube-v3-rev182-1.22.0.jar" REQUIRED="true"/>
-      <IMPORT NAME="jackson-databind" MODULE="jackson-databind-2.7.5.jar" REQUIRED="true"/>
-      <IMPORT NAME="jackson-annotations" MODULE="jackson-annotations-2.7.0.jar" REQUIRED="true"/>
-      <IMPORT NAME="jackson-core" MODULE="jackson-core-2.7.5.jar" REQUIRED="true"/>
-      <IMPORT NAME="httpclient" MODULE="httpclient-4.3.6.jar" REQUIRED="true"/>
-      <IMPORT NAME="httpcore" MODULE="httpcore-4.3.3.jar" REQUIRED="true"/>
-      <IMPORT NAME="commons-logging" MODULE="commons-logging-1.1.3.jar" REQUIRED="true"/>
-      <IMPORT NAME="commons-codec" MODULE="commons-codec-1.6.jar" REQUIRED="true"/>
-      <IMPORT NAME="google-http-client-jackson2" MODULE="google-http-client-jackson2-1.22.0.jar" REQUIRED="true"/>
-      <IMPORT NAME="google-http-client" MODULE="google-http-client-1.22.0.jar" REQUIRED="true"/>
-      <IMPORT NAME="jsr305" MODULE="jsr305-1.3.9.jar" REQUIRED="true"/>
-      <IMPORT NAME="google-oauth-client-jetty" MODULE="google-oauth-client-jetty-1.22.0.jar" REQUIRED="true"/>
-      <IMPORT NAME="google-oauth-client-java6" MODULE="google-oauth-client-java6-1.22.0.jar" REQUIRED="true"/>
+      <IMPORT NAME="jlo-talendcomp-ytanalytics" MODULE="jlo-talendcomp-ytanalytics-2.0.jar" REQUIRED="true"/>
+      <IMPORT NAME="google-api-services-youtubeAnalytics-v2-rev20180601" MODULE="google-api-services-youtubeAnalytics-v2-rev20180601-1.28.0.jar" REQUIRED="true"/>
+      <IMPORT NAME="google-api-client" MODULE="google-api-client-1.28.0.jar" REQUIRED="true"/>
+      <IMPORT NAME="google-oauth-client" MODULE="google-oauth-client-1.28.0.jar" REQUIRED="true"/>
+      <IMPORT NAME="google-http-client" MODULE="google-http-client-1.28.0.jar" REQUIRED="true"/>
+      <IMPORT NAME="opencensus-api" MODULE="opencensus-api-0.18.0.jar" REQUIRED="true"/>
+      <IMPORT NAME="grpc-context" MODULE="grpc-context-1.14.0.jar" REQUIRED="true"/>
+      <IMPORT NAME="opencensus-contrib-http-util" MODULE="opencensus-contrib-http-util-0.18.0.jar" REQUIRED="true"/>
+      <IMPORT NAME="jsr305" MODULE="jsr305-3.0.2.jar" REQUIRED="true"/>
+      <IMPORT NAME="google-http-client-jackson2" MODULE="google-http-client-jackson2-1.28.0.jar" REQUIRED="true"/>
+      <IMPORT NAME="jackson-core" MODULE="jackson-core-2.9.6.jar" REQUIRED="true"/>
+      <IMPORT NAME="google-http-client-apache" MODULE="google-http-client-apache-2.0.0.jar" REQUIRED="true"/>
+      <IMPORT NAME="httpclient" MODULE="httpclient-4.5.5.jar" REQUIRED="true"/>
+      <IMPORT NAME="httpcore" MODULE="httpcore-4.4.9.jar" REQUIRED="true"/>
+      <IMPORT NAME="commons-logging" MODULE="commons-logging-1.2.jar" REQUIRED="true"/>
+      <IMPORT NAME="commons-codec" MODULE="commons-codec-1.10.jar" REQUIRED="true"/>
+      <IMPORT NAME="guava-26.0" MODULE="guava-26.0-android.jar" REQUIRED="true"/>
+      <IMPORT NAME="checker-compat-qual" MODULE="checker-compat-qual-2.5.2.jar" REQUIRED="true"/>
+      <IMPORT NAME="error_prone_annotations" MODULE="error_prone_annotations-2.1.3.jar" REQUIRED="true"/>
+      <IMPORT NAME="j2objc-annotations" MODULE="j2objc-annotations-1.1.jar" REQUIRED="true"/>
+      <IMPORT NAME="animal-sniffer-annotations" MODULE="animal-sniffer-annotations-1.14.jar" REQUIRED="true"/>
+      <IMPORT NAME="google-api-services-youtube-v3-rev20190128" MODULE="google-api-services-youtube-v3-rev20190128-1.28.0.jar" REQUIRED="true"/>
+      <IMPORT NAME="google-oauth-client-jetty" MODULE="google-oauth-client-jetty-1.23.0.jar" REQUIRED="true"/>
+      <IMPORT NAME="google-oauth-client-java6" MODULE="google-oauth-client-java6-1.23.0.jar" REQUIRED="true"/>
       <IMPORT NAME="jetty" MODULE="jetty-6.1.26.jar" REQUIRED="true"/>
       <IMPORT NAME="jetty-util" MODULE="jetty-util-6.1.26.jar" REQUIRED="true"/>
       <IMPORT NAME="servlet-api-2.5" MODULE="servlet-api-2.5-20081211.jar" REQUIRED="true"/>
