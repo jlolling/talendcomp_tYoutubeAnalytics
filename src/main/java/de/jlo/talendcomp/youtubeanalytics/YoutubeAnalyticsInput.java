@@ -41,10 +41,11 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.Clock;
 import com.google.api.client.util.store.FileDataStoreFactory;
-import com.google.api.services.youtubeAnalytics.YouTubeAnalytics;
-import com.google.api.services.youtubeAnalytics.YouTubeAnalyticsScopes;
-import com.google.api.services.youtubeAnalytics.model.ResultTable;
-import com.google.api.services.youtubeAnalytics.model.ResultTable.ColumnHeaders;
+import com.google.api.services.youtubeAnalytics.v2.YouTubeAnalytics;
+import com.google.api.services.youtubeAnalytics.v2.YouTubeAnalytics.Reports.Query;
+import com.google.api.services.youtubeAnalytics.v2.YouTubeAnalyticsScopes;
+import com.google.api.services.youtubeAnalytics.v2.model.QueryResponse;
+import com.google.api.services.youtubeAnalytics.v2.model.ResultTableColumnHeader;
 
 public class YoutubeAnalyticsInput {
 
@@ -63,7 +64,7 @@ public class YoutubeAnalyticsInput {
 	private String applicationName = null;
 	// default date format for the API
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-	private int maxRows = 0;
+	private int maxRows = 100;
 	private int timeoutInSeconds = 120;
 	private int lastFetchedRowCount = 0;
 	private int overallRowCount = 0;
@@ -72,8 +73,8 @@ public class YoutubeAnalyticsInput {
 	private long timeMillisOffsetToPast = 10000;
 	/** Global instance of YoutubeAnalytics object to make analytic API requests. */
 	private YouTubeAnalytics analytics;
-	private com.google.api.services.youtubeAnalytics.YouTubeAnalytics.Reports.Query query;
-	private ResultTable resultTable = null;
+	private Query query;
+	private QueryResponse resultTable = null;
 	private List<String> requestedColumnNames = new ArrayList<String>();
 	private List<List<Object>> lastResultSet;
 	private String credentialDataStoreDir = null;
@@ -236,10 +237,11 @@ public class YoutubeAnalyticsInput {
 
 	private void executeDataQuery() throws Exception {
 		query = analytics.reports()
-				.query("channel==" + channelId,  
-					startDate,
-					endDate,
-					metrics);
+				.query();
+		query.setIds("channel=="+channelId);
+		query.setStartDate(startDate);
+		query.setEndDate(endDate);
+		query.setMetrics(metrics);
 		if (filters != null && filters.trim().isEmpty() == false) {
 			query.setFilters(filters);
 		}
@@ -251,6 +253,9 @@ public class YoutubeAnalyticsInput {
 		}
 		if (maxRows > 0) {
 			query.setMaxResults(maxRows);
+		}
+		if (debug) {
+			System.out.println("Execute query: " + query.toString());
 		}
 		resultTable = query.execute();
 		requestedColumnNames = new ArrayList<String>(); // reset
@@ -267,7 +272,7 @@ public class YoutubeAnalyticsInput {
 		startIndex = 1;
 		if (debug) {
 			System.out.println("Result set column headers:");
-			for (ColumnHeaders h : getColumnHeaders()) {
+			for (ResultTableColumnHeader h : getColumnHeaders()) {
 				System.out.println("name: " + h.getName() + " columnType: " + h.getColumnType() + " dataType: " + h.getDataType());
 			}
 			System.out.println("Result set initially contains " + lastFetchedRowCount + " rows.");
@@ -350,7 +355,7 @@ public class YoutubeAnalyticsInput {
 		}
 	}
 	
-	public List<ColumnHeaders> getColumnHeaders() {
+	public List<ResultTableColumnHeader> getColumnHeaders() {
 		if (resultTable != null) {
 			return resultTable.getColumnHeaders();
 		} else {
@@ -359,18 +364,18 @@ public class YoutubeAnalyticsInput {
 	}
 
 	public List<String> getColumnNames() {
-		List<ColumnHeaders> listHeaders = resultTable.getColumnHeaders();
+		List<ResultTableColumnHeader> listHeaders = resultTable.getColumnHeaders();
 		List<String> names = new ArrayList<String>();
-		for (ColumnHeaders ch : listHeaders) {
+		for (ResultTableColumnHeader ch : listHeaders) {
 			names.add(ch.getName());
 		}
 		return names;
 	}
 
 	public List<String> getColumnTypes() {
-		List<ColumnHeaders> listHeaders = resultTable.getColumnHeaders();
+		List<ResultTableColumnHeader> listHeaders = resultTable.getColumnHeaders();
 		List<String> types = new ArrayList<String>();
-		for (ColumnHeaders ch : listHeaders) {
+		for (ResultTableColumnHeader ch : listHeaders) {
 			types.add(ch.getDataType());
 		}
 		return types;

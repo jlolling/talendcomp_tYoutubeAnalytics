@@ -21,12 +21,13 @@ public class TestYoutube {
 	
 	private static class row1Struct {
 		
-		String country;
+		String video;
 		BigDecimal views;
 		Long likes;
 		
+		@Override
 		public String toString() {
-			return "country=" + country + ", views=" + views + ", likes=" + likes;
+			return "country=" + video + ", views=" + views + ", likes=" + likes;
 		}
 	}
 	
@@ -35,7 +36,7 @@ public class TestYoutube {
 		row1Struct row1 = null;
 		// start creating client
 		de.jlo.talendcomp.youtubeanalytics.YoutubeAnalyticsInput tYoutubeAnalyticsInput_1 = de.jlo.talendcomp.youtubeanalytics.YoutubeAnalyticsInput
-				.getFromCache("/Volumes/Data/Talend/testdata/ga/config/client_secret_503880615382-ve9ac3176d2acre79tevkirt0v6pa91v.apps.googleusercontent.com.json"
+				.getFromCache("/Data/Talend/testdata/ga/config/client_secret_503880615382-n8ti68l59e04hpuvljrbe6hml9ov5jch.apps.googleusercontent.com.json"
 						+ "" + "tYoutubeAnalyticsInput_1" + jobName);
 		if (tYoutubeAnalyticsInput_1 == null) {
 			tYoutubeAnalyticsInput_1 = new de.jlo.talendcomp.youtubeanalytics.YoutubeAnalyticsInput();
@@ -45,7 +46,7 @@ public class TestYoutube {
 			tYoutubeAnalyticsInput_1
 					.setAccountEmail("jan.lolling@gmail.com");
 			tYoutubeAnalyticsInput_1
-					.setClientSecretFile("/Volumes/Data/Talend/testdata/ga/config/client_secret_503880615382-ve9ac3176d2acre79tevkirt0v6pa91v.apps.googleusercontent.com.json");
+					.setClientSecretFile("/Data/Talend/testdata/ga/config/client_secret_503880615382-n8ti68l59e04hpuvljrbe6hml9ov5jch.apps.googleusercontent.com.json");
 			tYoutubeAnalyticsInput_1.setTimeoutInSeconds(240);
 			tYoutubeAnalyticsInput_1.setTimeOffsetMillisToPast(10000);
 			try {
@@ -60,7 +61,7 @@ public class TestYoutube {
 					tYoutubeAnalyticsInput_1);
 			de.jlo.talendcomp.youtubeanalytics.YoutubeAnalyticsInput
 					.putIntoCache(
-							"/Volumes/Data/Talend/testdata/ga/config/client_secret_503880615382-ve9ac3176d2acre79tevkirt0v6pa91v.apps.googleusercontent.com.json"
+							"/Data/Talend/testdata/ga/config/client_secret_503880615382-n8ti68l59e04hpuvljrbe6hml9ov5jch.apps.googleusercontent.com.json"
 									+ ""
 									+ "tYoutubeAnalyticsInput_1"
 									+ jobName, tYoutubeAnalyticsInput_1);
@@ -68,13 +69,13 @@ public class TestYoutube {
 			// setup query
 		tYoutubeAnalyticsInput_1
 				.setChannelId("UCFvoTlSik404RjXaBPCei8A");
-		tYoutubeAnalyticsInput_1.setStartDate("2014-01-01");
+		tYoutubeAnalyticsInput_1.setStartDate("2018-01-01");
 		tYoutubeAnalyticsInput_1.setMaxRows(100);
 		// for selecting data for one day, set end date == start date
-		tYoutubeAnalyticsInput_1.setEndDate("2014-11-04");
-		tYoutubeAnalyticsInput_1.setDimensions("country");
+		tYoutubeAnalyticsInput_1.setEndDate("2019-04-04");
+		tYoutubeAnalyticsInput_1.setDimensions("video");
 		tYoutubeAnalyticsInput_1.setMetrics("views,likes");
-		//tYoutubeAnalyticsInput_1.setSorts("day");
+		tYoutubeAnalyticsInput_1.setSorts("-views");
 		// fire query and fetch first chunk of data
 		try {
 			// checks also the correctness of result columns
@@ -101,7 +102,7 @@ public class TestYoutube {
 			// create a new row, thats avoid the need of setting
 			// attributes to null
 			row1 = new row1Struct();
-			row1.country = (String) dataset_tYoutubeAnalyticsInput_1
+			row1.video = (String) dataset_tYoutubeAnalyticsInput_1
 					.get(0);
 			row1.views = (BigDecimal) dataset_tYoutubeAnalyticsInput_1
 					.get(1);
