@@ -8,7 +8,7 @@
     <FAMILY>Business/Google</FAMILY> 
   </FAMILIES>  
   <DOCUMENTATION> 
-    <URL>http://www.jan-lolling.de/talend/components/help/tYoutubeAnalyticsInput.pdf</URL> 
+    <URL>https://github.com/jlolling/talendcomp_tYoutubeAnalytics</URL> 
   </DOCUMENTATION>  
   <CONNECTORS> 
     <CONNECTOR CTYPE="FLOW" MAX_INPUT="0" MIN_OUTPUT="1" MAX_OUTPUT="1"/>  
